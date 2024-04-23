@@ -204,6 +204,85 @@ resource "aws_ecs_task_definition" "dagster_control_plane_task_definition" {
         }
       ]
 
+    },
+    {
+      name      = "pipeline-y"
+      image     = "123123123.dkr.ecr.eu-central-1.amazonaws.com/deploy_ecs/pipeline-y:latest"
+      essential = true,
+      portMappings = [
+        {
+          containerPort = 4047,
+          hostPort      = 4047
+        }
+      ],
+      entryPoint = [
+        "dagster",
+        "api", "grpc",
+        "-h" ,"0.0.0.0",
+        "-p", "4047",
+        "-m", "pipeline_y"
+      ],
+      environment = [
+        {
+          name  = "DAGSTER_POSTGRES_HOSTNAME",
+          value = aws_db_instance.dagster_postgres_db.address
+        },
+        {
+          name  = "DAGSTER_POSTGRES_USER",
+          value = "postgres_user"
+        },
+        {
+          name  = "DAGSTER_POSTGRES_PASSWORD",
+          value = "postgres_password"
+        },
+        {
+          name  = "DAGSTER_POSTGRES_DB",
+          value = "postgres_db"
+        },
+        {
+          name  = "DATABASE_IP",
+          value = aws_db_instance.dagster_postgres_db.address 
+        },
+        {
+          name  = "DATABASE_PORT",
+          value = "5432"
+        },
+        {
+          name  = "DATABASE_USER",
+          value = "postgres_user"
+        },
+        {
+          name  = "DATABASE_PASSWORD",
+          value = "postgres_password"
+        },
+        {
+          name  = "DATABASE_NAME",
+          value = "postgres_db"
+        },
+        {
+          name  = "DAGSTER_CURRENT_IMAGE",
+          value = "123123123.dkr.ecr.eu-central-1.amazonaws.com/deploy_ecs/pipeline-y:latest"
+        },
+      ],
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          "awslogs-group"         = "/ecs/dagster-ecs-cluster",
+          "awslogs-region"        = "eu-central-1",
+          "awslogs-stream-prefix" = "pipeline-y"
+        }
+      },
+      secrets = [
+        {
+          name      = "AWS_ACCESS_KEY_ID"
+          valueFrom = "${aws_secretsmanager_secret.aws_credentials.arn}:AWS_ACCESS_KEY_ID::"
+        },
+        {
+          name      = "AWS_SECRET_ACCESS_KEY"
+          valueFrom = "${aws_secretsmanager_secret.aws_credentials.arn}:AWS_SECRET_ACCESS_KEY::"
+        }
+      ]
+
     }
   ])
 

@@ -4,7 +4,7 @@ load_from:
       host: localhost
       port: 4000
       location_name: "pipeline-x"
- #   - grpc_server:
- #      host: localhost
- #       port: 4047
- #       location_name: "pipeline-y"
+  - grpc_server:
+      host: localhost
+      port: 4047
+      location_name: "pipeline-y"
